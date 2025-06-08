@@ -63,7 +63,7 @@ jobs:
     - name: Build
       run: npm run build
 
-  deploy:
+  docker:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -71,19 +71,30 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
       with:
-        node-version: '18'
-        cache: 'npm'
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     
-    - name: Install dependencies
-      run: npm ci
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/p2-api:latest
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     
-    - name: Deploy
-      run: echo "Aqui você pode adicionar os comandos de deploy"
-      # Exemplo de deploy:
-      # - name: Deploy to production
-      #   run: |
-      #     # Adicione aqui seus comandos de deploy
-      #     # Por exemplo, deploy para AWS, Heroku, etc. 
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Render
+      run: |
+        curl -X POST https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }} 
