@@ -5,10 +5,15 @@ services:
     dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /health
-    buildCommand: npm install
-    startCommand: npm start
+    autoDeploy: true
+    branch: develop
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false 
+        sync: false
+    buildFilter:
+      paths:
+        - package.json
+        - Dockerfile
+        - src/** 
