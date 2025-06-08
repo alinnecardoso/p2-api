@@ -50,7 +50,7 @@ app.use((err, req, res, next) => {
 });
 
 // Inicialização do servidor e conexão com o banco
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
