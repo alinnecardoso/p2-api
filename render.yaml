@@ -5,6 +5,8 @@ services:
     dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /health
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
