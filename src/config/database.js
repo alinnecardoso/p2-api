@@ -1,10 +1,14 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
-const sequelize = new Sequelize('p2db', 'admin', 'admin', {
-  host: 'localhost',
-  port: 5432,
+const sequelize = new Sequelize({
   dialect: 'postgres',
-  logging: console.log, // Vamos habilitar os logs para debug
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_NAME || 'p2db',
+  username: process.env.DB_USER || 'admin',
+  password: process.env.DB_PASS || 'admin',
+  logging: console.log,
   pool: {
     max: 5,
     min: 0,
@@ -19,11 +23,11 @@ async function testConnection() {
     await sequelize.authenticate();
     console.log('Conexão com o banco de dados estabelecida com sucesso.');
   } catch (error) {
-    console.error('Não foi possível conectar ao banco de dados:', error);
+    console.error('Erro ao conectar com o banco de dados:', error);
   }
 }
 
-// Testa a conexão quando o arquivo é executado
+// Testa a conexão ao iniciar
 testConnection();
 
 module.exports = sequelize; 
