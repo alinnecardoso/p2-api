@@ -23,6 +23,21 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
+// Rota de criação de usuário
+app.post('/users', (req, res) => {
+  const { name, email } = req.body;
+  if (!name || !email) {
+    return res.status(400).json({ 
+      error: 'Nome e email são obrigatórios' 
+    });
+  }
+  // Aqui você pode adicionar a lógica para salvar no banco
+  res.status(201).json({
+    message: 'Usuário criado com sucesso',
+    user: { name, email }
+  });
+});
+
 // Tratamento de erros
 app.use((err, req, res, next) => {
   console.error(err.stack);
