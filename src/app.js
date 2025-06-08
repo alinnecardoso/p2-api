@@ -1,4 +1,7 @@
 const express = require('express');
+const sequelize = require('./config/database');
+const User = require('./models/User');
+
 const app = express();
 
 // Middleware para parsing de JSON
@@ -24,18 +27,23 @@ app.get('/health', (req, res) => {
 });
 
 // Rota de criação de usuário
-app.post('/users', (req, res) => {
-  const { name, email } = req.body;
-  if (!name || !email) {
-    return res.status(400).json({ 
-      error: 'Nome e email são obrigatórios' 
-    });
+app.post('/users', async (req, res) => {
+  try {
+    const user = await User.create(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
-  // Aqui você pode adicionar a lógica para salvar no banco
-  res.status(201).json({
-    message: 'Usuário criado com sucesso',
-    user: { name, email }
-  });
+});
+
+// Rota de listagem de usuários
+app.get('/users', async (req, res) => {
+  try {
+    const users = await User.findAll();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Tratamento de erros
@@ -46,5 +54,24 @@ app.use((err, req, res, next) => {
     message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
+
+// Inicialização do servidor e conexão com o banco
+env.PORT = process.env.PORT || 3000;
+
+async function startServer() {
+  try {
+    // Sincroniza os modelos com o banco de dados
+    await sequelize.sync();
+    console.log('Conexão com o banco de dados estabelecida com sucesso.');
+
+    app.listen(process.env.PORT, () => {
+      console.log(`Servidor rodando na porta ${process.env.PORT}`);
+    });
+  } catch (error) {
+    console.error('Erro ao conectar com o banco de dados:', error);
+  }
+}
+
+startServer();
 
 module.exports = app; 

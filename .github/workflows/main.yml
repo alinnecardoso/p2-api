@@ -81,4 +81,9 @@ jobs:
       run: npm ci
     
     - name: Deploy
-      run: echo "Aqui você pode adicionar os comandos de deploy" 
+      run: echo "Aqui você pode adicionar os comandos de deploy"
+      # Exemplo de deploy:
+      # - name: Deploy to production
+      #   run: |
+      #     # Adicione aqui seus comandos de deploy
+      #     # Por exemplo, deploy para AWS, Heroku, etc.
